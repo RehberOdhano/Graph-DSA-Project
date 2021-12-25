@@ -2,6 +2,7 @@
 #include <string>
 #include <limits.h>
 #include "queue.cpp"
+#include "stack.cpp"
 // #include "list.cpp"
 using namespace std;
 
@@ -99,8 +100,8 @@ void Graph::remove_edge(int from, int to) {
 void Graph::set_edge(int from, int to, int cost) {
 
 	if((from >= 0 && from < num_of_vertices) && (to >= 0 && to < num_of_vertices)) {
-		adjacency_matrix[from][to] = cost;
-		adjacency_matrix[to][from] = cost;
+		adjacency_matrix[from][to] = 1;
+		adjacency_matrix[to][from] = 1;
 	} else {
 		cout<<"PLEASE ENTER A VALID POSITION..."<<endl;
 	}	
@@ -117,6 +118,7 @@ void Graph::BFS(int s) {
 	visited_nodes[s] = 1;
 	q.push(s);
 
+	cout<<"BFS TRAVERSAL: ";
 	while(!q.isEmpty()) {
 		int node = q.pop();
 		cout<<node<<" ";
@@ -132,17 +134,30 @@ void Graph::BFS(int s) {
 			nbr++;
 		}
 	}
+	cout<<endl;
 }
 
 void Graph::DFS(int s) {
+	Stack stack;
+	stack.push(s);
 	visited_nodes[s] = 1;
-	cout<<s<<" ";
 
-	for(int* it = adjacency_matrix[s]; it != NULL; it++) {
-		if(!visited_nodes[*it]) {
-			DFS(*it);
+	cout<<"DFS TRAVERSAL: ";
+	while(!stack.isEmpty()) {
+		int node = stack.pop();
+		if(!visited_nodes[node]) {
+			cout<<node<<" ";
+			visited_nodes[node] = 1;
+		}
+
+		int* nbr = adjacency_matrix[node];
+		for(int i = 0; i < num_of_vertices; i++) {
+			if(*nbr >= 1 && !visited_nodes[i]) {
+				stack.push(i);
+			}
 		}
 	}
+	cout<<endl;
 }
 
 void Graph::dijkstra_shortest_path(int src) {
@@ -241,7 +256,7 @@ int main() {
 		cout<<"SELECT AN OPTION FROM THE ABOVE MENU - [0-10]: \n";
 		cin>>option;
 
-		if(option < 0 || option > 9) {
+		if(option < 0 || option > 10) {
 			cout<<"INVALID OPTION IS SELECTED...! PLEASE SELECT A VALID OPTION FROM THE ABOVE MENU\n";
 		} else {
 			switch(option) {
@@ -263,8 +278,8 @@ int main() {
 					cin>>x;
 					cout<<"ENTER THE DESTINATION NODE: \n";
 					cin>>y;
-					cout<<"ENTER THE COST OF THE EDGE: \n";
-					cin>>cost;
+					// cout<<"ENTER THE COST OF THE EDGE: \n";
+					// cin>>cost;
 
 					while(true) {
 						if(x < 0 || x > (vertices-1)) {
@@ -282,7 +297,7 @@ int main() {
 						}
 						else break;
 					}
-					graph.set_edge(x,y,cost);
+					graph.set_edge(x,y,0);
 					break;
 				case 3:
 					cout<<"ENTER THE SOURCE NODE: \n";
@@ -313,6 +328,7 @@ int main() {
 					} else {
 						graph.BFS(src_node);
 					}
+					graph.reset_visited_nodes();
 					break;
 				case 5:
 					cout<<"ENTER THE STARTING/SOURCE NODE: \n";
@@ -344,19 +360,19 @@ int main() {
 						graph.prims_MST(random_node);
 					}
 					break;
-				case 8:
-					cout<<"SELECT A RANDOM NODE: \n";
-					cin>>random_node;
+				// case 8:
+				// 	cout<<"SELECT A RANDOM NODE: \n";
+				// 	cin>>random_node;
 
-					if(random_node < 0 || random_node > (vertices-1)) {
-						cout<<"THE SOURCE NODE IS NOT IN THE GRAPH!\n";
-					} else {
-						graph.kruskal_MST(random_node);
-					}
-					break;
-				case 9:
-					graph.~Graph();
-					break;
+				// 	if(random_node < 0 || random_node > (vertices-1)) {
+				// 		cout<<"THE SOURCE NODE IS NOT IN THE GRAPH!\n";
+				// 	} else {
+				// 		graph.kruskal_MST(random_node);
+				// 	}
+				// 	break;
+				// case 9:
+				// 	graph.~Graph();
+				// 	break;
 				case 10:
 					graph.display_graph();
 					break;
@@ -367,41 +383,6 @@ int main() {
 		}
 
 	} while(option != 0);
-
-
-	// Graph graph(4);
-	// graph.set_edge(0, 1);
- //    graph.set_edge(0, 2);
- //    graph.set_edge(1, 2);
- //    graph.set_edge(2, 0);
- //    graph.set_edge(2, 3);
- //    graph.set_edge(3, 3);
-
-	// Graph graph(4);
-	// graph.set_distance(0, 1, 5);
- //    graph.set_distance(0, 2, 6);
- //    graph.set_distance(1, 2, 1);
- //    graph.set_distance(2, 3, 4);
- //    graph.set_distance(3, 1, 10);
-
-	// Graph graph(4);
-	// graph.set_distance(0,1,1);
-	// graph.set_distance(0,3,4);
-	// graph.set_distance(0,2,3);
-	// graph.set_distance(1,2,2);
-	// graph.set_distance(2,3,5);
-
-	// graph.display_graph();
-
-	// graph.BFS(0);
-	// cout<<endl;
-
-	// graph.reset_visited_nodes();
-	// graph.DFS(0);
-
-	// graph.dijkstra_shortest_path(0);
-	// graph.prims_MST(0);
-
 
 	return 0;
 }
