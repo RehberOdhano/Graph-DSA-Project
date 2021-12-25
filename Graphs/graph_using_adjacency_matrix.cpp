@@ -75,22 +75,10 @@ void Graph::Create_Graph(int numOfVertices) {
 
 	adjacency_matrix = new int*[num_of_vertices];
 	for(int i = 0; i < num_of_vertices; i++) {
-		cout<"------------------------------------------"<endl;
 		adjacency_matrix[i] = new int[num_of_vertices];
 		for(int j = 0; j < num_of_vertices; j++) {
-			city = new City();
-			cout<<"ENTER THE NAME OF DEPARTURE CITY: ";
-			cin>>name;
-			city->source = name;
-			cout<<"ENTER THE NAME OF DESTINATION CITY: ";
-			cin>>name;
-			city->destination = name;
-			cout<<"ENTER THE DISTANCE: ";
-			cin>>distance;
-			city->distance = distance;
-			adjacency_matrix[i][j] = city;
+			adjacency_matrix[i][j] = 0;
 		}
-		cout<"------------------------------------------"<endl;
 	}
 }
 
@@ -119,9 +107,22 @@ void Graph::remove_edge(int from, int to) {
 }
 
 void Graph::set_edge(int from, int to) {
+
 	if((from >= 0 && from < num_of_vertices) && (to >= 0 && to < num_of_vertices)) {
-		adjacency_matrix[from][to] = to;
-		adjacency_matrix[to][from] = from;
+		cout<"------------------------------------------"<endl;
+		city = new City();
+		cout<<"ENTER THE NAME OF DEPARTURE CITY: ";
+		cin>>name;
+		city->source = name;
+		cout<<"ENTER THE NAME OF DESTINATION CITY: ";
+		cin>>name;
+		city->destination = name;
+		cout<<"ENTER THE DISTANCE: ";
+		cin>>distance;
+		city->distance = distance;
+		adjacency_matrix[from][to] = city;
+		// adjacency_matrix[to][from] = from;
+		cout<"------------------------------------------"<endl;
 	} else {
 		cout<<"PLEASE ENTER A VALID POSITION..."<<endl;
 	}
