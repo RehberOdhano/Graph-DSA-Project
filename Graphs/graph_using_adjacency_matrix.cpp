@@ -422,9 +422,9 @@ int main() {
 				case 8:
 					graph.kruskal_MST();
 					break;
-				// case 9:
-				// 	graph.~Graph();
-				// 	break;
+				case 9:
+					graph.~Graph();
+					break;
 				case 10:
 					graph.display_graph();
 					break;
