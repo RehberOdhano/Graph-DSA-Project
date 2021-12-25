@@ -47,7 +47,7 @@ class Graph {
 		// for finding the valid edge and used in prim's algorithm
 		bool is_valid_edge(int u, int v);
 
-		void kruskal_MST(int random_node);
+		void kruskal_MST();
 
 		int find_set(int i);
 		void union_set(int i, int j);
@@ -67,14 +67,14 @@ void Graph::Create_Graph(int numOfVertices) {
 		visited_nodes[i] = 0;
 		distances[i] = INT_MAX;
 		mst_list[i] = 0;
-		parent_nodes[i] = 0;
+		// parent_nodes[i] = 0;
 	}
 
 	adjacency_matrix = new int*[num_of_vertices];
 	for(int i = 0; i < num_of_vertices; i++) {
 		adjacency_matrix[i] = new int[num_of_vertices];
 		for(int j = 0; j < num_of_vertices; j++) {
-			adjacency_matrix[i][j] = 0;
+			adjacency_matrix[i][j] = INT_MAX;
 		}
 	}
 }
@@ -133,7 +133,7 @@ void Graph::BFS(int s) {
 		int* nbr = adjacency_matrix[node];
 
 		for(int i = 0; i < num_of_vertices; i++) {
-			if(*nbr >= 1 && !visited_nodes[i]) {
+			if((*nbr > 0 && *nbr < INT_MAX) && !visited_nodes[i]) {
 				visited_nodes[i] = 1;
 				q.push(i);
 			}
@@ -157,7 +157,7 @@ void Graph::DFS(int s) {
 
 		int* nbr = adjacency_matrix[node];
 		for(int i = 0; i < num_of_vertices; i++) {
-			if(*nbr >= 1 && !visited_nodes[i]) {
+			if((*nbr > 0 && *nbr < INT_MAX) && !visited_nodes[i]) {
 				stack.push(i);
 			}
 		}
@@ -182,7 +182,7 @@ void Graph::dijkstra_shortest_path(int src) {
 		for(int i = 0; i < num_of_vertices; i++) {
 			// check if there is an edge or not and if the node is already
 			// visited or not
-			if(nbrs[i] > 0 && !visited_nodes[i]) {
+			if((nbrs[i] > 0 && nbrs[i] < INT_MAX) && !visited_nodes[i]) {
 				if(distances[node] + nbrs[i] < distances[i]) {
 					distances[i] = distances[node] + nbrs[i];
 					pq.push(i);
@@ -251,10 +251,12 @@ int Graph::find_set(int i) {
 }
 
 void Graph::union_set(int i, int j) {
-  parent_nodes[i] = parent_nodes[j];
+  int m = find_set(i);
+  int n = find_set(j);
+  parent_nodes[m] = n;
 }
 
-void Graph::kruskal_MST(int random_node) {
+void Graph::kruskal_MST() {
 	int min_cost_of_path = 0;
 
 	for(int i = 0; i < num_of_vertices; i++) {
@@ -278,6 +280,7 @@ void Graph::kruskal_MST(int random_node) {
         union_set(a, b);
         num_of_edges++;
         min_cost_of_path += min;
+        cout<<"Edge "<<num_of_edges<<": ("<<a<<","<<b<<")-->Cost: "<<min<<endl;
     }
     cout<<"\nMINIMUM COST USING KRUSKAL'S ALGORITHM: "<<min_cost_of_path<<endl;
 }
@@ -417,14 +420,7 @@ int main() {
 					}
 					break;
 				case 8:
-					cout<<"SELECT A RANDOM NODE: \n";
-					cin>>random_node;
-
-					if(random_node < 0 || random_node > (vertices-1)) {
-						cout<<"THE SOURCE NODE IS NOT IN THE GRAPH!\n";
-					} else {
-						graph.kruskal_MST(random_node);
-					}
+					graph.kruskal_MST();
 					break;
 				// case 9:
 				// 	graph.~Graph();
