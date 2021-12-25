@@ -6,7 +6,8 @@
 using namespace std;
 
 struct City {
-	string name;
+	string source;
+	string destination;
 	float distance;
 };
 
@@ -17,6 +18,8 @@ class Graph {
 		int* distances;
 		int* mst_list;
 		int num_of_vertices;
+		string name;
+		float distance;
 		City city;
 	public:
 
@@ -72,10 +75,22 @@ void Graph::Create_Graph(int numOfVertices) {
 
 	adjacency_matrix = new int*[num_of_vertices];
 	for(int i = 0; i < num_of_vertices; i++) {
+		cout<"------------------------------------------"<endl;
 		adjacency_matrix[i] = new int[num_of_vertices];
 		for(int j = 0; j < num_of_vertices; j++) {
-			adjacency_matrix[i][j] = 0;
+			city = new City();
+			cout<<"ENTER THE NAME OF DEPARTURE CITY: ";
+			cin>>name;
+			city->source = name;
+			cout<<"ENTER THE NAME OF DESTINATION CITY: ";
+			cin>>name;
+			city->destination = name;
+			cout<<"ENTER THE DISTANCE: ";
+			cin>>distance;
+			city->distance = distance;
+			adjacency_matrix[i][j] = city;
 		}
+		cout<"------------------------------------------"<endl;
 	}
 }
 
