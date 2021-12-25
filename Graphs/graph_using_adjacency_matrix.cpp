@@ -5,12 +5,6 @@
 // #include "list.cpp"
 using namespace std;
 
-struct City {
-	string source;
-	string destination;
-	float distance;
-};
-
 class Graph {
 	private:
 		int** adjacency_matrix;
@@ -18,16 +12,13 @@ class Graph {
 		int* distances;
 		int* mst_list;
 		int num_of_vertices;
-		string name;
-		float distance;
-		City city;
 	public:
 
 		// initializing the adjacency matrix to 0
 		void Create_Graph(int numOfVertices);
 
 		// setting/adding the edge
-		void set_edge(int from, int to);
+		void set_edge(int from, int to, int cost);
 
 		// removing an edge by the element at [i][j]th position to 0
 		void remove_edge(int from, int to);
@@ -35,6 +26,7 @@ class Graph {
 		// displaying the adjacency matrix
 		void display_graph();
 
+		// setting the elements of visited_nodes to 0
 		void reset_visited_nodes();
 
 		// Breadth-First Search
@@ -43,8 +35,6 @@ class Graph {
 
 		// Depth-First Search
 		void DFS(int s);
-
-		void set_distance(int from, int to, int distance);
 
 		// finding the shortest path
 		void dijkstra_shortest_path(int src);
@@ -106,32 +96,11 @@ void Graph::remove_edge(int from, int to) {
 	adjacency_matrix[to][from] = 0;
 }
 
-void Graph::set_edge(int from, int to) {
+void Graph::set_edge(int from, int to, int cost) {
 
 	if((from >= 0 && from < num_of_vertices) && (to >= 0 && to < num_of_vertices)) {
-		cout<"------------------------------------------"<endl;
-		city = new City();
-		cout<<"ENTER THE NAME OF DEPARTURE CITY: ";
-		cin>>name;
-		city->source = name;
-		cout<<"ENTER THE NAME OF DESTINATION CITY: ";
-		cin>>name;
-		city->destination = name;
-		cout<<"ENTER THE DISTANCE: ";
-		cin>>distance;
-		city->distance = distance;
-		adjacency_matrix[from][to] = city;
-		// adjacency_matrix[to][from] = from;
-		cout<"------------------------------------------"<endl;
-	} else {
-		cout<<"PLEASE ENTER A VALID POSITION..."<<endl;
-	}
-}
-
-void Graph::set_distance(int from, int to, int distance) {
-	if((from >= 0 && from < num_of_vertices) && (to >= 0 && to < num_of_vertices)) {
-		adjacency_matrix[from][to] = distance;
-		adjacency_matrix[to][from] = distance;
+		adjacency_matrix[from][to] = cost;
+		adjacency_matrix[to][from] = cost;
 	} else {
 		cout<<"PLEASE ENTER A VALID POSITION..."<<endl;
 	}	
@@ -313,7 +282,7 @@ int main() {
 						}
 						else break;
 					}
-					graph.set_distance(x,y,cost);
+					graph.set_edge(x,y,cost);
 					break;
 				case 3:
 					cout<<"ENTER THE SOURCE NODE: \n";
