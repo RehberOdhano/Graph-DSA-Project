@@ -7,7 +7,7 @@
 using namespace std;
 
 class Graph {
-	private:
+	public:
 		int** adjacency_matrix;
 		int* visited_nodes;
 		int* distances;
@@ -100,8 +100,8 @@ void Graph::remove_edge(int from, int to) {
 void Graph::set_edge(int from, int to, int cost) {
 
 	if((from >= 0 && from < num_of_vertices) && (to >= 0 && to < num_of_vertices)) {
-		adjacency_matrix[from][to] = 1;
-		adjacency_matrix[to][from] = 1;
+		adjacency_matrix[from][to] = cost;
+		adjacency_matrix[to][from] = cost;
 	} else {
 		cout<<"PLEASE ENTER A VALID POSITION..."<<endl;
 	}	
@@ -142,7 +142,6 @@ void Graph::DFS(int s) {
 	stack.push(s);
 	visited_nodes[s] = 1;
 
-	cout<<"DFS TRAVERSAL: ";
 	while(!stack.isEmpty()) {
 		int node = stack.pop();
 		if(!visited_nodes[node]) {
@@ -187,10 +186,12 @@ void Graph::dijkstra_shortest_path(int src) {
 		}
 	}
 
+	cout<<"DIJKSTRA'S SHORTEST PATH: ";
 	for(int i = 0; i < num_of_vertices; i++) {
 		if(distances[i] == INT_MAX) cout<<" -1 ";
 		else cout<<distances[i]<<" "; 
 	}
+	cout<<endl;
 }
 
 bool Graph::is_valid_edge(int u, int v) {
@@ -278,8 +279,8 @@ int main() {
 					cin>>x;
 					cout<<"ENTER THE DESTINATION NODE: \n";
 					cin>>y;
-					// cout<<"ENTER THE COST OF THE EDGE: \n";
-					// cin>>cost;
+					cout<<"ENTER THE COST OF THE EDGE: \n";
+					cin>>cost;
 
 					while(true) {
 						if(x < 0 || x > (vertices-1)) {
@@ -297,7 +298,7 @@ int main() {
 						}
 						else break;
 					}
-					graph.set_edge(x,y,0);
+					graph.set_edge(x,y,cost);
 					break;
 				case 3:
 					cout<<"ENTER THE SOURCE NODE: \n";
@@ -337,6 +338,12 @@ int main() {
 					if(src_node < 0 || src_node > (vertices-1)) {
 						cout<<"THE SOURCE NODE IS NOT IN THE GRAPH!\n";
 					} else {
+						cout<<"DFS TRAVERSAL: ";
+						// for(int i = 0; i < graph.num_of_vertices; i++) {
+						// 	if(graph.visited_nodes[i] == 0) {
+						// 		graph.DFS(i);
+						// 	}
+						// }
 						graph.DFS(src_node);
 					}
 					break;
