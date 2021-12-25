@@ -12,6 +12,7 @@ class Graph {
 		int* visited_nodes;
 		int* distances;
 		int* mst_list;
+		int* parent_nodes;
 		int num_of_vertices;
 	public:
 
@@ -48,6 +49,9 @@ class Graph {
 
 		void kruskal_MST(int random_node);
 
+		int find_set(int i);
+		void union_set(int i, int j);
+
 		// destructor - used for removing the adjacency matrix from the memory
 		~Graph();
 		
@@ -58,10 +62,12 @@ void Graph::Create_Graph(int numOfVertices) {
 	visited_nodes = new int[num_of_vertices];
 	mst_list = new int[num_of_vertices];
 	distances = new int[num_of_vertices];
+	parent_nodes = new int[num_of_vertices];
 	for(int i = 0; i < num_of_vertices; i++) {
 		visited_nodes[i] = 0;
 		distances[i] = INT_MAX;
 		mst_list[i] = 0;
+		parent_nodes[i] = 0;
 	}
 
 	adjacency_matrix = new int*[num_of_vertices];
@@ -230,7 +236,50 @@ void Graph::prims_MST(int random_node) {
 			num_of_edges++;
 		}
 	}
-	cout<<"\nMinimum Cost: "<<min_cost_of_path<<endl;
+	cout<<"\nMINIMUM COST USING PRIM'S ALGORITHM: "<<min_cost_of_path<<endl;
+}
+
+int Graph::find_set(int i) {
+  // If i is the parent of itself
+  if (i == parent_nodes[i])
+    return i;
+  else
+    // Else if i is not the parent of itself
+    // Then i is not the representative of his set,
+    // so we recursively call Find on its parent
+    return find_set(parent_nodes[i]);
+}
+
+void Graph::union_set(int i, int j) {
+  parent_nodes[i] = parent_nodes[j];
+}
+
+void Graph::kruskal_MST(int random_node) {
+	int min_cost_of_path = 0;
+
+	for(int i = 0; i < num_of_vertices; i++) {
+		parent_nodes[i] = i;
+	}
+
+	// Include minimum weight edges one by one
+    int num_of_edges = 0;
+    while (num_of_edges < num_of_vertices - 1) {
+        int min = INT_MAX, a = -1, b = -1;
+        for (int i = 0; i < num_of_vertices; i++) {
+            for (int j = 0; j < num_of_vertices; j++) {
+                if (find_set(i) != find_set(j) && adjacency_matrix[i][j] < min) {
+                    min = adjacency_matrix[i][j];
+                    a = i;
+                    b = j;
+                }
+            }
+        }
+ 
+        union_set(a, b);
+        num_of_edges++;
+        min_cost_of_path += min;
+    }
+    cout<<"\nMINIMUM COST USING KRUSKAL'S ALGORITHM: "<<min_cost_of_path<<endl;
 }
 
 int main() {
@@ -367,16 +416,16 @@ int main() {
 						graph.prims_MST(random_node);
 					}
 					break;
-				// case 8:
-				// 	cout<<"SELECT A RANDOM NODE: \n";
-				// 	cin>>random_node;
+				case 8:
+					cout<<"SELECT A RANDOM NODE: \n";
+					cin>>random_node;
 
-				// 	if(random_node < 0 || random_node > (vertices-1)) {
-				// 		cout<<"THE SOURCE NODE IS NOT IN THE GRAPH!\n";
-				// 	} else {
-				// 		graph.kruskal_MST(random_node);
-				// 	}
-				// 	break;
+					if(random_node < 0 || random_node > (vertices-1)) {
+						cout<<"THE SOURCE NODE IS NOT IN THE GRAPH!\n";
+					} else {
+						graph.kruskal_MST(random_node);
+					}
+					break;
 				// case 9:
 				// 	graph.~Graph();
 				// 	break;
