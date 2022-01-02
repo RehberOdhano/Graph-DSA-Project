@@ -3,6 +3,7 @@
 #include <limits.h>
 #include "queue.cpp"
 #include "stack.cpp"
+#include "priority_queue.cpp"
 // #include "list.cpp"
 using namespace std;
 
@@ -13,10 +14,10 @@ class Graph {
 		int* distances;
 		int* mst_list;
 		int* parent_nodes;
-		int num_of_vertices;
+		int num_of_vertices = 0;
 	public:
 
-		// initializing the adjacency matrix to 0
+		// initializing the adjacency matrix
 		void Create_Graph(int numOfVertices);
 
 		// setting/adding the edge
@@ -29,7 +30,7 @@ class Graph {
 		void display_graph();
 
 		// setting the elements of visited_nodes to 0
-		void reset_visited_nodes();
+		void reset();
 
 		// Breadth-First Search
 		// s -> source node
@@ -47,10 +48,12 @@ class Graph {
 		// for finding the valid edge and used in prim's algorithm
 		bool is_valid_edge(int u, int v);
 
-		void kruskal_MST();
-
+		// HELPER FUNCTIONS FOR KRUSKAL'S ALGORITHM
 		int find_set(int i);
 		void union_set(int i, int j);
+
+		// finding the path with minimum cost
+		void kruskal_MST();
 
 		// destructor - used for removing the adjacency matrix from the memory
 		~Graph();
@@ -63,11 +66,11 @@ void Graph::Create_Graph(int numOfVertices) {
 	mst_list = new int[num_of_vertices];
 	distances = new int[num_of_vertices];
 	parent_nodes = new int[num_of_vertices];
+
 	for(int i = 0; i < num_of_vertices; i++) {
 		visited_nodes[i] = 0;
 		distances[i] = INT_MAX;
 		mst_list[i] = 0;
-		// parent_nodes[i] = 0;
 	}
 
 	adjacency_matrix = new int*[num_of_vertices];
@@ -84,23 +87,30 @@ Graph::~Graph() {
 		delete[] adjacency_matrix[i];
 	}
 	delete[] adjacency_matrix;
+	num_of_vertices = 0;
+	cout<<"GRAPH IS DELETED SUCCESSFULLY!"<<endl;
 }
 
 void Graph::display_graph() {
-	cout<<"\nGRAPH - ADJACENCY MATRIX"<<endl;
-	cout<<"------------------------"<<endl;
-	for(int i = 0; i < num_of_vertices; i++) {
-		for(int j = 0; j < num_of_vertices; j++) {
-			cout<<adjacency_matrix[i][j]<<" ";
+	if(num_of_vertices == 0) {
+		cout<<"GRAPH IS EMPTY!"<<endl;
+	} else {
+		cout<<"\nGRAPH - ADJACENCY MATRIX"<<endl;
+		cout<<"------------------------"<<endl;
+		for(int i = 0; i < num_of_vertices; i++) {
+			for(int j = 0; j < num_of_vertices; j++) {
+				cout<<adjacency_matrix[i][j]<<" ";
+			}
+			cout<<endl;
 		}
-		cout<<endl;
+		cout<<"------------------------"<<endl;
 	}
-	cout<<"------------------------"<<endl;
 }
 
 void Graph::remove_edge(int from, int to) {
 	adjacency_matrix[from][to] = 0;
 	adjacency_matrix[to][from] = 0;
+	cout<<"EDGE("<<from<<", "<<to<<") IS REMOVED SUCCESSFULLY!"<<endl;
 }
 
 void Graph::set_edge(int from, int to, int cost) {
@@ -108,14 +118,17 @@ void Graph::set_edge(int from, int to, int cost) {
 	if((from >= 0 && from < num_of_vertices) && (to >= 0 && to < num_of_vertices)) {
 		adjacency_matrix[from][to] = cost;
 		adjacency_matrix[to][from] = cost;
+		cout<<"EDGE("<<from<<", "<<to<<") IS SET SUCCESSFULLY!"<<endl;		
 	} else {
 		cout<<"PLEASE ENTER A VALID POSITION..."<<endl;
 	}	
 }
 
-void Graph::reset_visited_nodes() {
+void Graph::reset() {
 	for(int i = 0; i < num_of_vertices; i++) {
 		visited_nodes[i] = 0;
+		distances[i] = INT_MAX;
+		mst_list[i] = 0;
 	}
 }
 
@@ -314,17 +327,22 @@ int main() {
 		} else {
 			switch(option) {
 				case 1:
-					cout<<"ENTER NUMBER OF VERTICES IN YOUR GRAPH: \n";
-					cin>>vertices;
-					while(true) {
-						if(vertices > 0) break;
-						else {
-							cout<<"NUMBER OF VERTICES CAN'T BE NEGATIVE!\nPLEASE ENTER A VALID NUMBER!";
-							cout<<"\nENTER NUMBER OF VERTICES IN YOUR GRAPH: \n";
-							cin>>vertices;
+					if(graph.num_of_vertices == 0) {
+						cout<<"ENTER NUMBER OF VERTICES IN YOUR GRAPH: \n";
+						cin>>vertices;
+						while(true) {
+							if(vertices > 0) break;
+							else {
+								cout<<"NUMBER OF VERTICES CAN'T BE NEGATIVE!\nPLEASE ENTER A VALID NUMBER!";
+								cout<<"\nENTER NUMBER OF VERTICES IN YOUR GRAPH: \n";
+								cin>>vertices;
+							}
 						}
+						graph.Create_Graph(vertices);
+						cout<<"GRAPH IS INITIALIZED SUCCESSFULLY!"<<endl;
+					} else {
+						cout<<"GRAPH IS ALREADY INITIALIZED!"<<endl;
 					}
-					graph.Create_Graph(vertices);
 					break;
 				case 2:
 					cout<<"ENTER THE SOURCE NODE: \n";
@@ -381,7 +399,7 @@ int main() {
 					} else {
 						graph.BFS(src_node);
 					}
-					graph.reset_visited_nodes();
+					graph.reset();
 					break;
 				case 5:
 					cout<<"ENTER THE STARTING/SOURCE NODE: \n";
@@ -397,6 +415,7 @@ int main() {
 						// 	}
 						// }
 						graph.DFS(src_node);
+						graph.reset();
 					}
 					break;
 				case 6:
@@ -407,6 +426,7 @@ int main() {
 						cout<<"THE SOURCE NODE IS NOT IN THE GRAPH!\n";
 					} else {
 						graph.dijkstra_shortest_path(src_node);
+						graph.reset();
 					}
 					break;
 				case 7:
@@ -417,6 +437,7 @@ int main() {
 						cout<<"THE SOURCE NODE IS NOT IN THE GRAPH!\n";
 					} else {
 						graph.prims_MST(random_node);
+						graph.reset();
 					}
 					break;
 				case 8:
