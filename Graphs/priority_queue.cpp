@@ -1,3 +1,11 @@
+#include <iostream>
+using namespace std;
+
+struct node {
+	int data;
+	node* next = NULL;
+};
+
 class Priority_Queue {
 	public:
 		node* front;
@@ -8,10 +16,20 @@ class Priority_Queue {
 		bool isEmpty();
 		void push(int x);
 		int pop();
+		void display();
 };
 
 Priority_Queue::Priority_Queue() { 
 	front = rear = NULL;
+}
+
+void Priority_Queue::display() {
+	node* temp = front;
+	while(temp != NULL) {
+		cout<<temp->data<<" ";
+		temp = temp->next;
+	}
+	cout<<endl;
 }
 
 bool Priority_Queue::isEmpty() {
@@ -33,16 +51,18 @@ void Priority_Queue::push(int x) {
 		else {
 			node* temp = front->next;
 			node* prev = front;
-			while(temp->next != rear) {
-				prev = temp;
+			while(temp->next != NULL) {
 				if(x < temp->data) break;
-				else temp = temp->next;
+				else {
+					prev = temp;
+					temp = temp->next;
+				}
 			}
 			prev->next = new_node;
 			new_node->next = temp;
 		}
-		new_node->data = x;
 	}
+	new_node->data = x;
 }
 
 int Priority_Queue::pop() {
@@ -54,4 +74,4 @@ int Priority_Queue::pop() {
 		delete temp;
 	}
 	return x;
-}    
+}   

@@ -1,10 +1,8 @@
 #include <iostream>
 #include <string>
 #include <limits.h>
-#include "queue.cpp"
+#include "queue.cpp" // simple FIFO and priority queue
 #include "stack.cpp"
-#include "priority_queue.cpp"
-// #include "list.cpp"
 using namespace std;
 
 class Graph {
@@ -108,20 +106,29 @@ void Graph::display_graph() {
 }
 
 void Graph::remove_edge(int from, int to) {
-	adjacency_matrix[from][to] = 0;
-	adjacency_matrix[to][from] = 0;
-	cout<<"EDGE("<<from<<", "<<to<<") IS REMOVED SUCCESSFULLY!"<<endl;
+	if((adjacency_matrix[from][to] == INT_MAX && adjacency_matrix[from][to] < INT_MAX) || 
+		(adjacency_matrix[to][from] == INT_MAX && adjacency_matrix[to][from] < INT_MAX)) {
+		cout<<"EDGE("<<from<<", "<<to<<") IS ALREADY REMOVED!"<<endl;		
+	} else {
+		adjacency_matrix[from][to] = INT_MAX;
+		adjacency_matrix[to][from] = INT_MAX;
+		cout<<"EDGE("<<from<<", "<<to<<") IS REMOVED SUCCESSFULLY!"<<endl;
+	}
 }
 
 void Graph::set_edge(int from, int to, int cost) {
-
-	if((from >= 0 && from < num_of_vertices) && (to >= 0 && to < num_of_vertices)) {
-		adjacency_matrix[from][to] = cost;
-		adjacency_matrix[to][from] = cost;
-		cout<<"EDGE("<<from<<", "<<to<<") IS SET SUCCESSFULLY!"<<endl;		
+	if((adjacency_matrix[from][to] >= 0 && adjacency_matrix[from][to] < INT_MAX) || 
+		(adjacency_matrix[to][from] >= 0 && adjacency_matrix[to][from] < INT_MAX)) {
+		cout<<"EDGE("<<from<<", "<<to<<") IS ALREADY SET!"<<endl;		
 	} else {
-		cout<<"PLEASE ENTER A VALID POSITION..."<<endl;
-	}	
+		if((from >= 0 && from < num_of_vertices) && (to >= 0 && to < num_of_vertices)) {
+			adjacency_matrix[from][to] = cost;
+			adjacency_matrix[to][from] = cost;
+			cout<<"EDGE("<<from<<", "<<to<<") IS SET SUCCESSFULLY!"<<endl;		
+		} else {
+			cout<<"PLEASE ENTER A VALID POSITION..."<<endl;
+		}	
+	}
 }
 
 void Graph::reset() {
@@ -134,6 +141,13 @@ void Graph::reset() {
 
 void Graph::BFS(int s) {
 	Queue q;
+
+	// cout<<"VISITED: ";
+	// for(int i = 0; i < num_of_vertices; i++) {
+	// 	cout<<visited_nodes[i]<<" ";
+	// }
+	// cout<<endl;
+
 	visited_nodes[s] = 1;
 	q.push(s);
 
@@ -144,25 +158,40 @@ void Graph::BFS(int s) {
 
 		// neighbours of the current node
 		int* nbr = adjacency_matrix[node];
+		// int* temp = nbr;
+		// cout<<"NBRS: ";
+		// for(int i = 0; i < num_of_vertices; i++) {
+		// 	cout<<*temp++<<" ";
+		// } 
 
 		for(int i = 0; i < num_of_vertices; i++) {
-			if((*nbr > 0 && *nbr < INT_MAX) && !visited_nodes[i]) {
+			// cout<<*nbr<<endl;
+			if((*nbr >= 0 && *nbr < INT_MAX) && !visited_nodes[i]) {
 				visited_nodes[i] = 1;
 				q.push(i);
 			}
 			nbr++;
 		}
+		// cout<<endl;
+		// q.display();
 	}
 	cout<<endl;
 }
 
 void Graph::DFS(int s) {
 	Stack stack;
+
+	// cout<<"VISITED: ";
+	// for(int i = 0; i < num_of_vertices; i++) {
+	// 	cout<<visited_nodes[i]<<" ";
+	// }
+	// cout<<endl;
+
 	stack.push(s);
-	visited_nodes[s] = 1;
 
 	while(!stack.isEmpty()) {
 		int node = stack.pop();
+		// cout<<"NODE: "<<node<<endl;
 		if(!visited_nodes[node]) {
 			cout<<node<<" ";
 			visited_nodes[node] = 1;
@@ -170,9 +199,10 @@ void Graph::DFS(int s) {
 
 		int* nbr = adjacency_matrix[node];
 		for(int i = 0; i < num_of_vertices; i++) {
-			if((*nbr > 0 && *nbr < INT_MAX) && !visited_nodes[i]) {
+			if((*nbr >= 0 && *nbr < INT_MAX) && !visited_nodes[i]) {
 				stack.push(i);
 			}
+			nbr++;
 		}
 	}
 	cout<<endl;
@@ -230,24 +260,31 @@ void Graph::prims_MST(int random_node) {
 
 	mst_list[random_node] = 1;
 	int num_of_edges = 0, min_cost_of_path = 0;
-	while(num_of_edges < (num_of_vertices - 1)) {
 
-		// finding the valid edge with minimum cost
-		int min = INT_MAX, p = -1, q = -1;
-		for(int i = 0; i < num_of_vertices; i++) {
-			for(int j = 0; j < num_of_vertices; j++) {
-				if(is_valid_edge(i, j)) {
-					min = adjacency_matrix[i][j];
-					p = i;
-					q = j;
-				}
-			}
-		}
-		if(p != -1 && q != -1) {
+	while (num_of_edges < (num_of_vertices - 1)) {
+	    int min = INT_MAX, p = -1, q = -1;
+	    for (int i = 0; i < num_of_vertices; i++) {
+	      	if (mst_list[i]) {
+		        for (int j = 0; j < num_of_vertices; j++) {
+		          	if (!mst_list[j] && (adjacency_matrix[i][j] > 0 && adjacency_matrix[i][j] < INT_MAX)) {  
+			            if (min > adjacency_matrix[i][j]) {
+			              	min = adjacency_matrix[i][j];
+			              	p = i;
+			              	q = j;
+			            }
+		          	}
+		        }
+	    	}
+    	}
+    	if(p != -1 && q != -1) {
+    		cout<<"EDGE ("<<p<<", "<<q<<"): "<<adjacency_matrix[p][q]<<endl;
 			min_cost_of_path += min;
 			mst_list[q] = mst_list[p] = 1;
 			num_of_edges++;
 		}
+    	// cout<<"EDGE ("<<p<<", "<<q<<"): "<<adjacency_matrix[p][q]<<endl;
+	    // mst_list[q] = 1;
+	    // num_of_edges++;
 	}
 	cout<<"\nMINIMUM COST USING PRIM'S ALGORITHM: "<<min_cost_of_path<<endl;
 }
@@ -355,7 +392,7 @@ int main() {
 					while(true) {
 						if(x < 0 || x > (vertices-1)) {
 							cout<<"PLEASE ENTER A VALID SOURCE NODE!\n";
-							cout<<"ENTER TEH SOURCE NODE: \n";
+							cout<<"ENTER THE SOURCE NODE: \n";
 							cin>>x;
 						} else if(y < 0 || y > (vertices-1)) {
 							cout<<"PLEASE ENTER A VALID DESTINATION NODE!\n";
@@ -442,6 +479,7 @@ int main() {
 					break;
 				case 8:
 					graph.kruskal_MST();
+					graph.reset();
 					break;
 				case 9:
 					graph.~Graph();

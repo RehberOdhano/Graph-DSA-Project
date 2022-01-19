@@ -1,3 +1,6 @@
+#include <iostream>
+using namespace std;
+
 
 struct stk {
 	int data;
@@ -14,10 +17,24 @@ class Stack {
 		bool isEmpty();
 		void push(int x);
 		int pop();
+		void display();
 };
 
 Stack::Stack() { 
 	top = NULL;
+}
+
+void Stack::display() {
+	if(top == NULL) cout<<"EMPTY!"<<endl;
+	else {
+		stk* temp = top;
+		while(temp != NULL) {
+			cout<<temp->data<<" ";
+			temp = temp->next;
+		}
+		cout<<endl;
+		// cout<<top->data<<endl;
+	}
 }
 
 bool Stack::isEmpty() {
@@ -44,4 +61,4 @@ int Stack::pop() {
 		delete temp;
 	}
 	return x;
-}
+}    
